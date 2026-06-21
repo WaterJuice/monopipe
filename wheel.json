@@ -1,0 +1,20 @@
+{
+    "name": "monopipe",
+    "description": "Multiplex a command's stdout, stderr, and exit code into a single JSONL stream",
+    "author": "WaterJuice",
+    "license": "Unlicense",
+    "homepage": "https://github.com/WaterJuice/monopipe",
+    "readme": "README.md",
+    "classifiers": [
+        "Programming Language :: Go"
+    ],
+    "binaries": {
+        "macos_arm64": "dist/monopipe-darwin-arm64",
+        "macos_amd64": "dist/monopipe-darwin-amd64",
+        "linux_amd64": "dist/monopipe-linux-amd64",
+        "linux_arm64": "dist/monopipe-linux-arm64",
+        "windows_amd64": "dist/monopipe-windows-amd64.exe",
+        "windows_arm64": "dist/monopipe-windows-arm64.exe"
+    },
+    "output-dir": "output"
+}

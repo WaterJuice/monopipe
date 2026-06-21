@@ -1,0 +1,23 @@
+[project]
+name = "monopipe"
+requires-python = ">=3.12"
+version = "0.0.0"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+]
+
+[project.urls]
+Documentation = "https://docs.waterjuice.org/monopipe/latest/"
+Source = "https://github.com/WaterJuice/monopipe"
+
+[tool.wj-publish]
+profile = "waterjuice"
+
+[tool.uv]
+
+[dependency-groups]
+dev = [
+    "bin2whl>=1.0.0b3",
+    "wj-mkdocs",
+    "wj-publish",
+]

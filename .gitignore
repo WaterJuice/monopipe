@@ -1,0 +1,20 @@
+# Go
+dist/
+
+# Virtual environments (for uv dev tools)
+.venv/
+venv/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Build output
+/output
+/html
+
+# macOS
+.DS_Store

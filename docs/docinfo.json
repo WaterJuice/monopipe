@@ -1,0 +1,4 @@
+{
+  "title": "monopipe",
+  "description": "Multiplex a command's stdout, stderr, and exit code into a single JSONL stream"
+}
