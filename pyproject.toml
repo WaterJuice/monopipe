@@ -17,7 +17,7 @@ profile = "waterjuice"
 
 [dependency-groups]
 dev = [
-    "bin2whl>=1.0.0b3",
+    "bin2whl",
     "wj-mkdocs",
     "wj-publish",
 ]

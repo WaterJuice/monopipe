@@ -556,7 +556,7 @@ dev = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "bin2whl", specifier = ">=1.0.0b3" },
+    { name = "bin2whl" },
     { name = "wj-mkdocs" },
     { name = "wj-publish" },
 ]
