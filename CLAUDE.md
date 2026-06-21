@@ -130,9 +130,9 @@ Order: `start` first, then `stdout`/`stderr` interleaved in arrival order, then 
 ### Capture Mode (capture.go)
 
 - Runs the child via `os/exec`, with `cmd.Stdin = os.Stdin` (forwarded, not recorded)
-- One goroutine per output pipe reads fixed-size chunks (32 KiB) and encodes each as a record
+- One goroutine per output pipe reads from it and frames the bytes into records — one text line (up to its newline) or up to 512 bytes (`maxRecordBytes`), whichever comes first
 - A single writer goroutine serialises records to stdout via a channel — guarantees well-formed JSONL with no interleaved partial lines, flushed line-by-line for streaming
-- One record per read chunk, so memory is bounded for large output
+- Line/512-byte framing keeps records readable while bounding memory for large output
 - Exit code via `ProcessState.ExitCode()`; signal-terminated children yield 128+signal (Unix)
 - monopipe itself exits 0 on a successful capture; non-zero only on its own failure
 

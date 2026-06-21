@@ -25,6 +25,7 @@ package internal
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
@@ -40,9 +41,13 @@ import (
 //
 // ---------------------------------------------------------------------------------------
 
-// chunkSize is the read buffer size for draining the child's output pipes. One JSONL
-// record is emitted per non-empty read, so memory stays bounded for large output.
-const chunkSize = 32 * 1024
+// readBufSize is the buffer size used when reading from the child's output pipes.
+const readBufSize = 32 * 1024
+
+// maxRecordBytes caps the output carried by a single JSONL record. A record holds one
+// text line (up to and including its newline) or up to this many bytes, whichever comes
+// first — so the stream stays readable line-by-line while memory stays bounded.
+const maxRecordBytes = 512
 
 // ---------------------------------------------------------------------------------------
 //
@@ -133,23 +138,57 @@ func runCapture(argv []string) int {
 }
 
 // ---------------------------------------------------------------------------------------
-// pumpStream reads chunks from r, encodes each as a JSONL record via enc, and sends them
-// to the events channel until end of stream.
+// pumpStream reads r, frames its bytes into records (one text line, or up to
+// maxRecordBytes when a line is longer or no newline has arrived yet), encodes each via
+// enc, and sends them to the events channel until end of stream.
 func pumpStream(r io.Reader, enc *streamEncoder, events chan<- []byte, wg *sync.WaitGroup) {
 	defer wg.Done()
-	buf := make([]byte, chunkSize)
+
+	send := func(frame []byte) {
+		if rec, e := enc.encode(frame); e == nil && rec != nil {
+			events <- rec
+		}
+	}
+
+	buf := make([]byte, readBufSize)
+	var pending []byte
 	for {
 		n, err := r.Read(buf)
 		if n > 0 {
-			if rec, e := enc.encode(buf[:n]); e == nil && rec != nil {
-				events <- rec
-			}
+			pending = emitFrames(append(pending, buf[:n]...), send)
 		}
 		if err != nil {
 			break
 		}
 	}
+
+	// Emit whatever is left at EOF, still respecting the record size cap.
+	for len(pending) > 0 {
+		k := min(len(pending), maxRecordBytes)
+		send(pending[:k])
+		pending = pending[k:]
+	}
 	if rec, e := enc.flush(); e == nil && rec != nil {
 		events <- rec
+	}
+}
+
+// ---------------------------------------------------------------------------------------
+// emitFrames sends every complete record at the front of data — a line up to and including
+// its newline, or a maxRecordBytes-sized chunk when a line is longer or carries no newline
+// yet — and returns the unconsumed remainder to carry into the next read.
+func emitFrames(data []byte, send func([]byte)) []byte {
+	for {
+		if nl := bytes.IndexByte(data, '\n'); nl >= 0 && nl < maxRecordBytes {
+			send(data[:nl+1])
+			data = data[nl+1:]
+			continue
+		}
+		if len(data) >= maxRecordBytes {
+			send(data[:maxRecordBytes])
+			data = data[maxRecordBytes:]
+			continue
+		}
+		return data
 	}
 }

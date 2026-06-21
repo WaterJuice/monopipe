@@ -62,7 +62,7 @@ One JSON object per line. When **produced** by capture mode, each object carries
 | `stdout_b64` / `stderr_b64` | string — base64 of the raw bytes, for non-UTF-8 output   |
 | `retcode`                   | integer — the command's exit code                        |
 
-Records appear in this order: `start` first, then `stdout` and `stderr` chunks interleaved in arrival order, then `retcode` last. One record is emitted per read chunk, so memory stays constant for large output and the stream is real-time.
+Records appear in this order: `start` first, then `stdout` and `stderr` chunks interleaved in arrival order, then `retcode` last. Each record holds one line of output (up to and including its newline), or up to 512 bytes when a line is longer or carries no newline yet — so the stream stays readable line-by-line, memory stays bounded, and output is replayed in real time.
 
 ### Text vs base64
 

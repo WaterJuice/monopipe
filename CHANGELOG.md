@@ -3,7 +3,7 @@
 - Initial release
 - Capture mode: run a command like `time`, multiplexing its stdout, stderr, and exit code into a single ordered JSONL stream on stdout
 - Split mode (`-s`): read that JSONL stream on stdin and demultiplex it back into real stdout and stderr, mirroring the recorded return code so monopipe stays transparent in a pipeline
-- One JSONL record per read chunk, emitted through a single serialised writer — well-formed output, streamed in real time, constant memory for large output
+- One JSONL record per output line, or per 512 bytes when a line is longer, emitted through a single serialised writer — readable line-by-line, well-formed, streamed in real time, bounded memory for large output
 - Output kept as human-readable text when valid UTF-8, with byte-exact base64 fallback (`stdout_b64` / `stderr_b64`) for arbitrary binary output
 - Incomplete trailing UTF-8 sequences are carried across read boundaries, so multi-byte runes never spuriously trigger the base64 fallback
 - Child stdin is forwarded in capture mode, so interactive programs and filters work

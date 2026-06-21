@@ -51,7 +51,7 @@ See the [Usage](usage.md) page for full details.
 
 ## How It Works
 
-In capture mode, monopipe runs the child with its own stdin forwarded through (so interactive programs and filters still work), reads stdout and stderr concurrently, and emits one record per read chunk through a single serialised writer — so the JSONL is always well-formed and streamed in real time. The child's exit code is emitted last as a `retcode` record.
+In capture mode, monopipe runs the child with its own stdin forwarded through (so interactive programs and filters still work), reads stdout and stderr concurrently, and emits one record per output line — or per 512 bytes when a line is longer — through a single serialised writer, so the JSONL is always well-formed and streamed in real time. The child's exit code is emitted last as a `retcode` record.
 
 In split mode, monopipe reads the JSONL on stdin, writes each chunk to the matching channel, and exits with the recorded `retcode` so it stays transparent in a pipeline.
 
