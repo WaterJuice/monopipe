@@ -1,3 +1,10 @@
+# monopipe 1.0.0 - 28 Oct 2026
+
+First stable release, promoting 1.0.0 Beta 1 unchanged apart from the toolchain.
+
+- Built with Go 1.27.3 to pick up the fix for the eMudura TLS issue.
+- `go.mod` now requires Go 1.27.3 (was 1.25.0), so builds from source can't fall back to an older toolchain without the fix. This also brings in Go 1.27's default runtime (`GODEBUG`) settings.
+
 # monopipe 1.0.0 Beta 1 - 21 Jun 2026
 
 - Initial release

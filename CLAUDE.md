@@ -73,7 +73,7 @@ func MyFunction() {
 
 ### General
 
-- Go 1.25+
+- Go 1.27.3+
 - Zero external dependencies — stdlib only
 - Use `gofmt` for formatting, `go vet` for linting
 - Run `make format` to auto-fix formatting
